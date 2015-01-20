@@ -1,0 +1,26 @@
+# Расширения файлов
+*.diff
+*.err
+*.orig
+*.log
+*.rej
+*.swo
+*.swp
+*.vi
+*~
+*.sass-cache
+
+# Системные файлы и IDE
+.DS_Store
+Thumbs.db
+.cache
+.project
+.settings
+.tmproj
+*.esproj
+nbproject
+.idea
+
+# Файлы проекта
+*.iml
+!.gitkeep
