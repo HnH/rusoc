@@ -1,12 +1,13 @@
 package rusoc
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"net/url"
-	"fmt"
 )
 
+// Структура клиента приложения для Одноклассников
 type ClientOk struct {
 	app			App
 	socialId	uint64
@@ -38,7 +39,7 @@ func (self *ClientOk) GenerateSignature(request url.Values) (signature string) {
 	if _, chk := request["session_key"]; chk {
 		signature += self.sessSecKey
 	} else {
-		signature += self.app.GetSecretKey()
+		signature += self.GetApp().GetSecretKey()
 	}
 
 	signature = getMD5(signature)
@@ -50,21 +51,15 @@ func (self *ClientOk) GenerateSignature(request url.Values) (signature string) {
 // Проверка авторизации пользователя с текущим session_key на сервере OK
 func (self *ClientOk) CheckAuth() bool {
 	request := url.Values{}
-	request.Add("application_key", self.app.GetKey())
+	request.Add("application_key", self.GetApp().GetKey())
 	request.Add("session_key", self.sessKey)
 	request.Add("sig", self.GenerateSignature(request))
 
 	// URL для запроса
 	// @see http://apiok.ru/wiki/display/api/users.getLoggedInUser+ru
-	var (
-		url		= "https://api.ok.ru/api/users/getLoggedInUser?" + request.Encode()
-		body	[]byte
-		err		error
-	)
-
-	if body, err = getHTTP(url); err != nil {
+	if body, err := self.GetApp().CallMethod("users/getLoggedInUser", request.Encode()); err != nil {
 		return false
+	} else {
+		return string(body) == fmt.Sprintf(`"%d"`, self.GetSocialId())
 	}
-
-	return string(body) == fmt.Sprintf(`"%d"`, self.socialId)
 }
