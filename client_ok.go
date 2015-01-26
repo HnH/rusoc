@@ -13,6 +13,7 @@ type ClientOk struct {
 	socialId	uint64
 	sessKey		string
 	sessSecKey	string
+	authSig		string
 }
 
 func (self *ClientOk) GetApp() App {
@@ -50,16 +51,5 @@ func (self *ClientOk) GenerateSignature(request url.Values) (signature string) {
 
 // Проверка авторизации пользователя с текущим session_key на сервере OK
 func (self *ClientOk) CheckAuth() bool {
-	request := url.Values{}
-	request.Add("application_key", self.GetApp().GetKey())
-	request.Add("session_key", self.sessKey)
-	request.Add("sig", self.GenerateSignature(request))
-
-	// URL для запроса
-	// @see http://apiok.ru/wiki/display/api/users.getLoggedInUser+ru
-	if body, err := self.GetApp().CallMethod("users/getLoggedInUser", request.Encode()); err != nil {
-		return false
-	} else {
-		return string(body) == fmt.Sprintf(`"%d"`, self.GetSocialId())
-	}
+	return getMD5(fmt.Sprintf(`%d_%s_%s`, self.GetSocialId(), self.sessKey, self.GetApp().GetSecretKey())) == self.authSig
 }

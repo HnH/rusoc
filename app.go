@@ -4,7 +4,9 @@ import (
 	"net/url"
 )
 
+// Интерфейс приложения в социальной сети
 type App interface {
+	GetId() (uint64)
 	GetSocial() (string)
 	GetKey() (string)
 	GetSecretKey() (string)

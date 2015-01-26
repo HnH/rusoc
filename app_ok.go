@@ -6,10 +6,11 @@ import (
 	"net/url"
 )
 
-// Контструктор приложения
-func NewAppOk(appKey, secKey string) App {
+// Контструктор приложения Одноклассников
+func NewAppOk(appId uint64, appKey, secKey string) App {
 	return &AppOk{
 		server:	"https://api.ok.ru/api/%s?%s",
+		appId:	appId,
 		appKey:	appKey,
 		secKey:	secKey,
 	}
@@ -18,8 +19,14 @@ func NewAppOk(appKey, secKey string) App {
 // Структура приложения Одноклассников
 type AppOk struct {
 	server	string
+	appId	uint64
 	appKey	string
 	secKey	string
+}
+
+// ID приложения
+func (self *AppOk) GetId() uint64 {
+	return self.appId
 }
 
 // Социальная сеть текущего приложения
@@ -28,7 +35,7 @@ func (self *AppOk) GetSocial() string {
 	return OK
 }
 
-// Ключ приложения
+// Публичный ключ приложения
 func (self *AppOk) GetKey() string {
 	return self.appKey
 }
@@ -49,12 +56,14 @@ func (self *AppOk) CallMethod(method, params string) ([]byte, error) {
 }
 
 // Конструктор клиента текущего приложения
+// @see http://apiok.ru/wiki/pages/viewpage.action?pageId=46137373#APIДокументация(Русский)-Параметрыприложения
 func (self *AppOk) NewClient(req url.Values) (Client, error) {
-	socialId, _	:= strconv.ParseUint(req.Get("social_id"), 10, 64)
-	sessKey		:= req.Get("sess_key")
-	sessSecKey	:= req.Get("sess_sec_key")
+	socialId, e	:= strconv.ParseUint(req.Get("logged_user_id"), 10, 64)
+	sessKey		:= req.Get("session_key")
+	sessSecKey	:= req.Get("session_secret_key")
+	authSig		:= req.Get("auth_sig")
 
-	if socialId == 0 || len(sessKey) == 0 || len(sessSecKey) == 0 {
+	if e != nil || socialId == 0 || len(sessKey) == 0 || len(sessSecKey) == 0 || len(authSig) == 0 {
 		return nil, errInvalidParams
 	}
 
@@ -63,5 +72,6 @@ func (self *AppOk) NewClient(req url.Values) (Client, error) {
 		socialId:	socialId,
 		sessKey:	sessKey,
 		sessSecKey:	sessSecKey,
+		authSig:	authSig,
 	}, nil
 }

@@ -1,16 +1,18 @@
 package rusoc
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"net/url"
-	"fmt"
 )
 
 // Структура клиента приложения ВКонтакте
 type ClientVk struct {
 	app			App
 	socialId	uint64
+	sessId		string
+	sessSecret	string
 	authKey		string
 }
 
