@@ -13,6 +13,7 @@ import (
 const (
 	OK	= "OK"
 	VK	= "VK"
+	TS	= "TS"
 )
 
 var (
