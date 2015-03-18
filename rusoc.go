@@ -13,7 +13,7 @@ import (
 const (
 	OK	= "OK"
 	VK	= "VK"
-	TS	= "TS"
+	TT	= "TT"
 )
 
 var (
@@ -21,14 +21,14 @@ var (
 )
 
 // Считаем md5 хэш
-func getMD5(s string) string {
+func GetMD5(s string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(s))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 // HTTP запрос
-func getHTTP(u string) (body []byte, err error) {
+func GetHTTP(u string) (body []byte, err error) {
 	var (
 		timeout	= time.Duration(5 * time.Second)
 		client	= http.Client{Timeout: timeout}

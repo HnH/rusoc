@@ -20,6 +20,10 @@ func (self *ClientVk) GetApp() App {
 	return self.app
 }
 
+func (self *ClientVk) GetSocial() string {
+	return self.GetApp().GetSocial()
+}
+
 func (self *ClientVk) GetSocialId() uint64 {
 	return self.socialId
 }
@@ -37,7 +41,7 @@ func (self *ClientVk) GenerateSignature(request url.Values) (signature string) {
 	sort.Strings(reqArr)
 	signature = strings.Join(reqArr, "")
 	signature += self.GetApp().GetSecretKey()
-	signature = getMD5(signature)
+	signature = GetMD5(signature)
 
 	return
 }
@@ -45,5 +49,5 @@ func (self *ClientVk) GenerateSignature(request url.Values) (signature string) {
 // Проверка авторизации пользователя на сервере ВКонтакте
 // @see: https://vk.com/dev.php?method=auth_key
 func (self *ClientVk) CheckAuth() bool {
-	return getMD5(fmt.Sprintf(`%s_%d_%s`, self.GetApp().GetKey(), self.GetSocialId(), self.GetApp().GetSecretKey())) == self.authKey
+	return GetMD5(fmt.Sprintf(`%s_%d_%s`, self.GetApp().GetKey(), self.GetSocialId(), self.GetApp().GetSecretKey())) == self.authKey
 }

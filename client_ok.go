@@ -20,6 +20,10 @@ func (self *ClientOk) GetApp() App {
 	return self.app
 }
 
+func (self *ClientOk) GetSocial() string {
+	return self.GetApp().GetSocial()
+}
+
 func (self *ClientOk) GetSocialId() uint64 {
 	return self.socialId
 }
@@ -43,7 +47,7 @@ func (self *ClientOk) GenerateSignature(request url.Values) (signature string) {
 		signature += self.GetApp().GetSecretKey()
 	}
 
-	signature = getMD5(signature)
+	signature = GetMD5(signature)
 	signature = strings.ToLower(signature)
 
 	return
@@ -51,5 +55,5 @@ func (self *ClientOk) GenerateSignature(request url.Values) (signature string) {
 
 // Проверка авторизации пользователя с текущим session_key на сервере OK
 func (self *ClientOk) CheckAuth() bool {
-	return getMD5(fmt.Sprintf(`%d_%s_%s`, self.GetSocialId(), self.sessKey, self.GetApp().GetSecretKey())) == self.authSig
+	return GetMD5(fmt.Sprintf(`%d_%s_%s`, self.GetSocialId(), self.sessKey, self.GetApp().GetSecretKey())) == self.authSig
 }

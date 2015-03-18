@@ -52,7 +52,7 @@ func (self *AppVk) GetUrl(method, params string) string {
 
 // Вызов метода с результатом в виде массива байтов
 func (self *AppVk) CallMethod(method, params string) ([]byte, error) {
-	return getHTTP(self.GetUrl(method, params))
+	return GetHTTP(self.GetUrl(method, params))
 }
 
 // Конструктор клиента текущего приложения

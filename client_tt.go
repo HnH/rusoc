@@ -14,6 +14,10 @@ func (self *ClientTest) GetApp() App {
 	return self.app
 }
 
+func (self *ClientTest) GetSocial() string {
+	return self.GetApp().GetSocial()
+}
+
 func (self *ClientTest) GetSocialId() uint64 {
 	return self.socialId
 }

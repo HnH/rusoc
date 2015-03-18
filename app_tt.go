@@ -32,7 +32,7 @@ func (self *AppTest) GetId() uint64 {
 // Социальная сеть текущего приложения
 // Метод необходим для идентефикации при работе через интерфейс
 func (self *AppTest) GetSocial() string {
-	return TS
+	return TT
 }
 
 // Публичный ключ приложения
@@ -52,7 +52,7 @@ func (self *AppTest) GetUrl(method, params string) string {
 
 // Вызов метода с результатом в виде массива байтов
 func (self *AppTest) CallMethod(method, params string) ([]byte, error) {
-	return getHTTP(self.GetUrl(method, params))
+	return GetHTTP(self.GetUrl(method, params))
 }
 
 // Конструктор клиента текущего приложения
