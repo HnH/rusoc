@@ -50,6 +50,9 @@ func (self *ClientMM) GenerateSignature(request url.Values) (signature string) {
 // Вызов метода с результатом в виде массива байтов
 func (self *ClientMM) CallMethod(method string, params url.Values) ([]byte, error) {
 	params.Set("method", method)
+	// Всегда используем схему сервер-сервер
+	// @see http://api.mail.ru/docs/guides/restapi/#server
+	params.Set("secure", "1")
 	params.Set(KEY_SIG, self.GenerateSignature(params))
 	return GetHTTP(self.GetApp().GetUrl(method, params))
 }
