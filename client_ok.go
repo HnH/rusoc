@@ -34,7 +34,11 @@ func (self *ClientOk) GenerateSignature(request url.Values) (signature string) {
 	reqArr := make([]string, len(request))
 
 	for k, _ := range request {
-		reqArr = append(reqArr, k + "=" + request.Get(k))
+		if len(request[k]) > 1 {
+			reqArr = append(reqArr, k + "=" + strings.Join(request[k], ","))
+		} else {
+			reqArr = append(reqArr, k + "=" + request.Get(k))
+		}
 	}
 	sort.Strings(reqArr)
 	signature = strings.Join(reqArr, "")
@@ -51,6 +55,12 @@ func (self *ClientOk) GenerateSignature(request url.Values) (signature string) {
 	signature = strings.ToLower(signature)
 
 	return
+}
+
+// Вызов метода с результатом в виде массива байтов
+func (self *ClientOk) CallMethod(method string, params url.Values) ([]byte, error) {
+	params.Set(KEY_SIG, self.GenerateSignature(params))
+	return GetHTTP(self.GetApp().GetUrl(method, params))
 }
 
 // Проверка авторизации пользователя с текущим session_key на сервере OK

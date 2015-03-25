@@ -10,8 +10,7 @@ type App interface {
 	GetSocial() (string)
 	GetKey() (string)
 	GetSecretKey() (string)
-	GetUrl(string, string) (string)
-	CallMethod(string, string) ([]byte, error)
+	GetUrl(string, url.Values) (string)
 
 	NewClient(url.Values) (Client, error)
 }

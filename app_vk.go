@@ -46,13 +46,8 @@ func (self *AppVk) GetSecretKey() string {
 }
 
 // Полный URL для вызова метода
-func (self *AppVk) GetUrl(method, params string) string {
-	return fmt.Sprintf(self.server, method, params)
-}
-
-// Вызов метода с результатом в виде массива байтов
-func (self *AppVk) CallMethod(method, params string) ([]byte, error) {
-	return GetHTTP(self.GetUrl(method, params))
+func (self *AppVk) GetUrl(method string, params url.Values) string {
+	return fmt.Sprintf(self.server, method, params.Encode())
 }
 
 // Конструктор клиента текущего приложения

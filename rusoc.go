@@ -13,7 +13,10 @@ import (
 const (
 	OK	= "OK"
 	VK	= "VK"
+	MM	= "MM"
 	TT	= "TT"
+
+	KEY_SIG = "sig"
 )
 
 var (

@@ -46,13 +46,8 @@ func (self *AppTest) GetSecretKey() string {
 }
 
 // Полный URL для вызова метода
-func (self *AppTest) GetUrl(method, params string) string {
-	return fmt.Sprintf(self.server, method, params)
-}
-
-// Вызов метода с результатом в виде массива байтов
-func (self *AppTest) CallMethod(method, params string) ([]byte, error) {
-	return GetHTTP(self.GetUrl(method, params))
+func (self *AppTest) GetUrl(method string, params url.Values) string {
+	return fmt.Sprintf(self.server, method, params.Encode())
 }
 
 // Конструктор клиента текущего приложения
