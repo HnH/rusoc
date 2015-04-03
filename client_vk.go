@@ -50,7 +50,7 @@ func (self *ClientVk) GenerateSignature(request url.Values) (signature string) {
 }
 
 // Вызов метода с результатом в виде массива байтов
-func (self *ClientVk) CallMethod(method string, params url.Values) ([]byte, error) {
+func (self *ClientVk) CallMethod(method string, params url.Values) ([]byte, int, error) {
 	params.Set(KEY_SIG, self.GenerateSignature(params))
 	return GetHTTP(self.GetApp().GetUrl(method, params))
 }

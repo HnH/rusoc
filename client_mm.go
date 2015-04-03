@@ -48,7 +48,7 @@ func (self *ClientMM) GenerateSignature(request url.Values) (signature string) {
 }
 
 // Вызов метода с результатом в виде массива байтов
-func (self *ClientMM) CallMethod(method string, params url.Values) ([]byte, error) {
+func (self *ClientMM) CallMethod(method string, params url.Values) ([]byte, int, error) {
 	params.Set("method", method)
 	// Всегда используем схему сервер-сервер
 	// @see http://api.mail.ru/docs/guides/restapi/#server

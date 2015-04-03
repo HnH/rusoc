@@ -9,6 +9,6 @@ type Client interface {
 	GetSocialId() (uint64)
 	GenerateSignature(url.Values) (string)
 
-	CallMethod(string, url.Values) ([]byte, error)
+	CallMethod(string, url.Values) ([]byte, int, error)
 	CheckAuth() (bool)
 }
