@@ -65,5 +65,5 @@ func (self *ClientOk) CallMethod(method string, params url.Values) ([]byte, int,
 
 // Проверка авторизации пользователя с текущим session_key на сервере OK
 func (self *ClientOk) CheckAuth() bool {
-	return GetMD5(fmt.Sprintf(`%d_%s_%s`, self.GetSocialId(), self.sessKey, self.GetApp().GetSecretKey())) == self.authSig
+	return GetMD5(fmt.Sprintf(`%d%s%s`, self.GetSocialId(), self.sessKey, self.GetApp().GetSecretKey())) == self.authSig
 }
