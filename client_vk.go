@@ -2,8 +2,6 @@ package rusoc
 
 import (
 	"fmt"
-	"sort"
-	"strings"
 	"net/url"
 )
 
@@ -28,31 +26,9 @@ func (self *ClientVk) GetSocialId() uint64 {
 	return self.socialId
 }
 
-// Генерация подписи для API ВКонтакте
-// @see https://vk.com/page-1_2369497
-func (self *ClientVk) GenerateSignature(request url.Values) (signature string) {
-	reqArr := make([]string, len(request))
-
-	for k, _ := range request {
-		if len(request[k]) > 1 {
-			reqArr = append(reqArr, k + "=" + strings.Join(request[k], ","))
-		} else {
-			reqArr = append(reqArr, k + "=" + request.Get(k))
-		}
-	}
-
-	sort.Strings(reqArr)
-	signature = strings.Join(reqArr, "")
-	signature += self.GetApp().GetSecretKey()
-	signature = GetMD5(signature)
-
-	return
-}
-
 // Вызов метода с результатом в виде массива байтов
 func (self *ClientVk) CallMethod(method string, params url.Values) ([]byte, int, error) {
-	params.Set(KEY_SIG, self.GenerateSignature(params))
-	return GetHTTP(self.GetApp().GetUrl(method, params))
+	return self.GetApp().CallMethod(method, params)
 }
 
 // Проверка авторизации пользователя на сервере ВКонтакте

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"net/url"
+	"strings"
+	"sort"
 )
 
 // Конструктор приложения ВКонтакте
@@ -48,6 +50,30 @@ func (self *AppVk) GetSecretKey() string {
 // Полный URL для вызова метода
 func (self *AppVk) GetUrl(method string, params url.Values) string {
 	return fmt.Sprintf(self.server, method, params.Encode())
+}
+
+// Вызов метода с результатом в виде массива байтов
+func (self *AppVk) CallMethod(method string, params url.Values) ([]byte, int, error) {
+	params.Set(KEY_SIG, self.GenerateSignature(params, self.GetSecretKey()))
+	return GetHTTP(self.GetUrl(method, params))
+}
+
+// Генерация подписи для API ВКонтакте
+// @see https://vk.com/page-1_2369497
+func (self *AppVk) GenerateSignature(request url.Values, secret string) (signature string) {
+	var reqArr = make([]string, len(request))
+	for k, _ := range request {
+		if len(request[k]) > 1 {
+			reqArr = append(reqArr, k + "=" + strings.Join(request[k], ","))
+		} else {
+			reqArr = append(reqArr, k + "=" + request.Get(k))
+		}
+	}
+	sort.Strings(reqArr)
+
+	signature = strings.Join(reqArr, "") + secret
+	signature = GetMD5(signature)
+	return
 }
 
 // Конструктор клиента текущего приложения

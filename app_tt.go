@@ -50,6 +50,17 @@ func (self *AppTest) GetUrl(method string, params url.Values) string {
 	return fmt.Sprintf(self.server, method, params.Encode())
 }
 
+// Генерация подписи
+func (self *AppTest) GenerateSignature(request url.Values, secret string) (signature string) {
+	return
+}
+
+// Вызов метода с результатом в виде массива байтов
+func (self *AppTest) CallMethod(method string, params url.Values) ([]byte, int, error) {
+	params.Set(KEY_SIG, self.GenerateSignature(params, self.GetSecretKey()))
+	return GetHTTP(self.GetUrl(method, params))
+}
+
 // Конструктор клиента текущего приложения
 func (self *AppTest) NewClient(req url.Values) (Client, error) {
 	socialId, e	:= strconv.ParseUint(req.Get("social_id"), 10, 64)

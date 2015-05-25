@@ -10,7 +10,10 @@ type App interface {
 	GetSocial() (string)
 	GetKey() (string)
 	GetSecretKey() (string)
+
 	GetUrl(string, url.Values) (string)
+	CallMethod(string, url.Values) ([]byte, int, error)
+	GenerateSignature(url.Values, string) (string)
 
 	NewClient(url.Values) (Client, error)
 }

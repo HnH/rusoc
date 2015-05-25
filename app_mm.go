@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"net/url"
+	"strings"
+	"sort"
 )
 
 // Контструктор приложения Мой Мир
@@ -50,6 +52,34 @@ func (self *AppMM) GetUrl(method string, params url.Values) string {
 	return fmt.Sprintf(self.server, params.Encode())
 }
 
+// Вызов метода с результатом в виде массива байтов
+func (self *AppMM) CallMethod(method string, params url.Values) ([]byte, int, error) {
+	params.Set("method", method)
+	// Всегда используем схему сервер-сервер для вызов
+	// @see http://api.mail.ru/docs/guides/restapi/#server
+	params.Set("secure", "1")
+	params.Set(KEY_SIG, self.GenerateSignature(params, self.GetSecretKey()))
+	return GetHTTP(self.GetUrl(method, params))
+}
+
+// Генерация подписи для API MM
+// @see http://api.mail.ru/docs/guides/restapi/#sig
+func (self *AppMM) GenerateSignature(request url.Values, secret string) (signature string) {
+	var reqArr = make([]string, len(request))
+	for k, _ := range request {
+		if len(request[k]) > 1 {
+			reqArr = append(reqArr, k + "=" + strings.Join(request[k], ","))
+		} else {
+			reqArr = append(reqArr, k + "=" + request.Get(k))
+		}
+	}
+	sort.Strings(reqArr)
+
+	signature = strings.Join(reqArr, "") + secret
+	signature = strings.ToLower(GetMD5(signature))
+	return
+}
+
 // Конструктор клиента текущего приложения
 // @see http://api.mail.ru/docs/guides/social-apps/#params
 func (self *AppMM) NewClient(req url.Values) (Client, error) {
@@ -70,7 +100,7 @@ func (self *AppMM) NewClient(req url.Values) (Client, error) {
 
 	sig := req.Get(KEY_SIG)
 	req.Del(KEY_SIG)
-	if sig == c.GenerateSignature(req) {
+	if sig == self.GenerateSignature(req, self.GetSecretKey()) {
 		c.authSig = true
 	}
 

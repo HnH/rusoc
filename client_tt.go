@@ -22,15 +22,9 @@ func (self *ClientTest) GetSocialId() uint64 {
 	return self.socialId
 }
 
-// Генерация подписи
-func (self *ClientTest) GenerateSignature(request url.Values) (signature string) {
-	return
-}
-
 // Вызов метода с результатом в виде массива байтов
 func (self *ClientTest) CallMethod(method string, params url.Values) ([]byte, int, error) {
-	params.Set(KEY_SIG, self.GenerateSignature(params))
-	return GetHTTP(self.GetApp().GetUrl(method, params))
+	return self.GetApp().CallMethod(method, params)
 }
 
 // Проверка авторизации пользователя с текущим session_key на сервере OK

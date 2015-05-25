@@ -2,8 +2,6 @@ package rusoc
 
 import (
 	"fmt"
-	"sort"
-	"strings"
 	"net/url"
 )
 
@@ -28,38 +26,9 @@ func (self *ClientOk) GetSocialId() uint64 {
 	return self.socialId
 }
 
-// Генерация подписи для API OK
-// @see http://apiok.ru/wiki/pages/viewpage.action?pageId=42476522
-func (self *ClientOk) GenerateSignature(request url.Values) (signature string) {
-	reqArr := make([]string, len(request))
-
-	for k, _ := range request {
-		if len(request[k]) > 1 {
-			reqArr = append(reqArr, k + "=" + strings.Join(request[k], ","))
-		} else {
-			reqArr = append(reqArr, k + "=" + request.Get(k))
-		}
-	}
-	sort.Strings(reqArr)
-	signature = strings.Join(reqArr, "")
-
-	// APP secret key для запросов без session_key
-	// SESS secret key для запросов с session_key
-	if _, chk := request["session_key"]; chk {
-		signature += self.sessSecKey
-	} else {
-		signature += self.GetApp().GetSecretKey()
-	}
-
-	signature = GetMD5(signature)
-	signature = strings.ToLower(signature)
-
-	return
-}
-
 // Вызов метода с результатом в виде массива байтов
 func (self *ClientOk) CallMethod(method string, params url.Values) ([]byte, int, error) {
-	params.Set(KEY_SIG, self.GenerateSignature(params))
+	params.Set(KEY_SIG, self.GetApp().GenerateSignature(params, self.sessSecKey))
 	return GetHTTP(self.GetApp().GetUrl(method, params))
 }
 

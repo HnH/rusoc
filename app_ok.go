@@ -2,7 +2,9 @@ package rusoc
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
+	"strings"
 	"net/url"
 )
 
@@ -48,6 +50,30 @@ func (self *AppOk) GetSecretKey() string {
 // Полный URL для вызова метода
 func (self *AppOk) GetUrl(method string, params url.Values) string {
 	return fmt.Sprintf(self.server, method, params.Encode())
+}
+
+// Вызов метода с результатом в виде массива байтов
+func (self *AppOk) CallMethod(method string, params url.Values) ([]byte, int, error) {
+	params.Set(KEY_SIG, self.GenerateSignature(params, self.GetSecretKey()))
+	return GetHTTP(self.GetUrl(method, params))
+}
+
+// Генерация подписи для API OK
+// @see http://apiok.ru/wiki/pages/viewpage.action?pageId=42476522
+func (self *AppOk) GenerateSignature(request url.Values, secret string) (signature string) {
+	var reqArr = make([]string, len(request))
+	for k, _ := range request {
+		if len(request[k]) > 1 {
+			reqArr = append(reqArr, k + "=" + strings.Join(request[k], ","))
+		} else {
+			reqArr = append(reqArr, k + "=" + request.Get(k))
+		}
+	}
+	sort.Strings(reqArr)
+
+	signature = strings.Join(reqArr, "") + secret
+	signature = strings.ToLower(GetMD5(signature))
+	return
 }
 
 // Конструктор клиента текущего приложения
