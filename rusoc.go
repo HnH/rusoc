@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	OK	= "OK"
-	VK	= "VK"
-	MM	= "MM"
-	TT	= "TT"
+	OK	= "ok"
+	VK	= "vk"
+	MM	= "mm"
+	TT	= "tt"
 
 	KEY_SIG = "sig"
 )

@@ -2,10 +2,10 @@ package rusoc
 
 import (
 	"fmt"
-	"strconv"
-	"net/url"
-	"strings"
 	"sort"
+	"strconv"
+	"strings"
+	"net/url"
 )
 
 // Контструктор приложения Мой Мир
