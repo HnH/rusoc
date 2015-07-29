@@ -75,7 +75,6 @@ func (self *clientVk) sendNotification(txt, token string) {
 	self.CallMethod("secure.sendNotification", req)
 }
 
-
 func main() {
 	var (
 		app = appVk{
